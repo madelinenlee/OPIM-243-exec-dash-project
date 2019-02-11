@@ -32,21 +32,33 @@ while user_input != 'DONE':
     
     else:
         print('Error: input is not in right format (must have .csv as suffix!) Try again.')
+ 
+def get_months(pathname_list):
+    month_list = []
+    for pathname in pathname_list:
+        temp_dataframe = pd.read_csv(pathname)
+        month = temp_dataframe['date'][0].strftime('%B')
+        month_list.append(month)
     
+    return(month_list)
 
-for pathname in compare_list:
-    temp_dataframe = pd.read_csv(pathname)
-    month_list.append(temp_dataframe)
+def create_master_dataframe(pathname_list):
+    df_list = []
+    for pathname in pathname_list:
+        temp_dataframe = pd.read_csv(pathname)
+        df_list.append(temp_dataframe)
+    
+    final_frame = pd.concat(df_list)
 
 def get_total_sales(data_frame):
     return(data_frame['sales price'].sum())
     
 def create_product_sales_dict(data_frame):
-    products = sales_data['product'].unique().tolist()
+    products = data_frame['product'].unique().tolist()
     product_subtotals = {}
     
     for item in products:
-        product_subset = sales_data[sales_data['product'] == item]
+        product_subset = data_frame[data_frame['product'] == item]
         product_total = product_subset['sales price'].sum()
         product_subtotals[item] = product_total
         
@@ -55,3 +67,6 @@ def create_product_sales_dict(data_frame):
         product_subtotals = dict(reversed(sorted_product_subtotals))
     
     return(product_subtotals)
+    
+def create_line_graph(data_frame):
+    data_frame['date']
