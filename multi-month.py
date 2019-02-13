@@ -103,6 +103,9 @@ def create_master_dataframe(pathname_list):
 
 def get_total_sales(data_frame):
     return(data_frame['sales price'].sum())
+
+def get_mean_sales(data_frame):
+    return(data_frame['sales price'].mean())
     
 def create_product_sales_dict(data_frame):
     products = data_frame['product'].unique().tolist()
@@ -143,8 +146,6 @@ def create_comparison_bar(data_frame):
     figure = go.Figure(data = data,layout=layout)
 
     py.plot(figure, filename='compare-bar')
-
-
 
 #function adapted from previous project i completed on NFL historical data
 def create_line_graph(data_frame):
@@ -264,12 +265,12 @@ def create_average_line_graph(data_frame):
         for month in month_list:
             x_list.append(month_dictionary[month])
             temp_month_frame = temp_frame[temp_frame['month'] == month]
-            y_list.append(get_total_sales(temp_month_frame))
+            y_list.append(get_mean_sales(temp_month_frame))
         
         
-        print(x_list, y_list)
+        #print(x_list, y_list)
         
-        print(colors[i])
+        #print(colors[i])
         temp_scatter = go.Scatter(x=x_list,
                               y=y_list,
                               name= products[i],
@@ -341,7 +342,116 @@ def create_average_line_graph(data_frame):
         )
     ])
     
-    layout = dict(title='Sales vs Month Per Product',
+    layout = dict(title=' Mean Sales vs Month Per Product',
+                  showlegend=False,
+                  xaxis=dict(
+                        title = 'Time (Months)'
+                        ),
+                  yaxis=dict(
+                        title = 'Sales ($)'
+                        ),                    
+                updatemenus=updatemenus)
+
+    fig = dict(data=data_list, layout=layout)
+    py.iplot(fig, filename='mean-sales-vs-month-int')
+
+def create_total_line_graph(data_frame):
+    colors = ['#33CFA5','orange','#F06A6A','blue', 'violet',
+              'yellowgreen','darkgrey','goldenrod']
+    products = data_frame['product'].unique().tolist()
+    month_list = data_frame['month'].unique().tolist()
+    
+    products=sorted(products)
+    #print(products)
+    
+    data_list = []
+    
+    
+    for i in range(0, len(products)):
+        x_list = []
+        y_list = []
+        temp_frame = data_frame[data_frame['product'] == products[i]]
+        for month in month_list:
+            x_list.append(month_dictionary[month])
+            temp_month_frame = temp_frame[temp_frame['month'] == month]
+            y_list.append(get_total_sales(temp_month_frame))
+        
+        
+        #print(x_list, y_list)
+        
+        #print(colors[i])
+        temp_scatter = go.Scatter(x=x_list,
+                              y=y_list,
+                              name= products[i],
+                              line=dict(color=colors[i])
+                                        )
+        
+        data_list.append(temp_scatter)
+    
+    updatemenus = list([
+    dict(type="buttons",
+         active=-1,
+         buttons=list([
+            dict(label = 'Brown Boots',
+                 method = 'update',
+                 args = [{'visible': [True, False, False, False, 
+                                      False, False, False, False]},
+                         {'title': 'Brown Boots Sales over Time ($)',
+                          'annotations': []}]
+                         ),
+            dict(label = 'Button-Down Shirt',
+                 method = 'update',
+                 args = [{'visible': [False,True, False,False,
+                                      False, False, False, False]},
+                         {'title': 'Button-Down Shirt Sales over Time ($)',
+                          'annotations': []}]),
+            dict(label = 'Khaki Pants',
+                 method = 'update',
+                 args = [{'visible': [False, False,True, False,
+                                      False, False, False, False]},
+                         {'title': 'Khaki Pants Sales over Time ($)',
+                          'annotations': []}]),
+            dict(label = 'Sticker Pack',
+                 method = 'update',
+                 args = [{'visible': [False, False, False, True,
+                                      False, False, False, False]},
+                         {'title': 'Sticker Pack Sales over Time ($)',
+                          'annotations': []}]),
+            dict(label = 'Super Soft Hoodie',
+                 method = 'update',
+                 args = [{'visible': [False, False, False, False,
+                                      True, False, False, False]},
+                         {'title': 'Super Soft Hoodie Sales over Time ($)',
+                          'annotations': []}]),
+            dict(label = 'Super Soft Sweater',
+                 method = 'update',
+                 args = [{'visible': [False, False, False, False,
+                                      False, True, False, False]},
+                         {'title': 'Super Soft Sweater Sales over Time ($)',
+                          'annotations': []}]),
+            dict(label = 'Vintage Logo Tee',
+             method = 'update',
+             args = [{'visible': [False, False, False, False,
+                                  False, False, True, False]},
+                     {'title': 'Vintage Logo Tee Sales over Time ($)',
+                      'annotations': []}]),
+            dict(label = 'Winter Hat',
+                 method = 'update',
+                 args = [{'visible': [False, False, False, False,
+                                      False, False, False, True]},
+                         {'title': 'Winter Hat Sales over Time ($)',
+                          'annotations': []}]),
+            dict(label = 'All',
+                 method = 'update',
+                 args = [{'visible': [True, True, True, True,
+                                      True, True, True, True]},
+                         {'title': 'All Sales over Time ($)',
+                          'annotations': []}])
+            ]),
+        )
+    ])
+    
+    layout = dict(title=' Sales vs Month Per Product',
                   showlegend=False,
                   xaxis=dict(
                         title = 'Time (Months)'
@@ -383,6 +493,8 @@ create_line_graph(test_frame_2)
 create_comparison_bar(test_frame_2)
 print('Months with Highest Sales: ')
 month_rank = month_rank(test_frame_2)
+create_total_line_graph(test_frame_2)
 create_average_line_graph(test_frame_2)
+
 
     
