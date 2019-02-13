@@ -126,11 +126,11 @@ def create_comparison_bar(data_frame):
     total_month_sales = []
     for month in month_list:
         temp_frame = data_frame[data_frame['month'] == month]
-        temp_sales = temp_frame['sales price'].sum()
+        temp_sales = get_total_sales(temp_frame)
         total_month_sales.append(temp_sales)
         month_name.append(month_dictionary[month])
     
-    print(month_name, total_month_sales)
+    #print(month_name, total_month_sales)
     
     data = [go.Bar(
             x=month_name,
@@ -247,22 +247,35 @@ def create_line_graph(data_frame):
 
 def create_average_line_graph(data_frame):
     colors = ['#33CFA5','orange','#F06A6A','blue', 'violet',
-              'yellowgreen','aliceblue','lightgoldenrodyellow']
+              'yellowgreen','darkgrey','goldenrod']
     products = data_frame['product'].unique().tolist()
+    month_list = data_frame['month'].unique().tolist()
+    
     products=sorted(products)
-    print(products)
+    #print(products)
     
     data_list = []
-    month_list = []
+    
     
     for i in range(0, len(products)):
+        x_list = []
+        y_list = []
         temp_frame = data_frame[data_frame['product'] == products[i]]
-        temp_frame 
-        temp_scatter = go.Scatter(x=temp_frame['date'],
-                              y=temp_frame['sales price'],
+        for month in month_list:
+            x_list.append(month_dictionary[month])
+            temp_month_frame = temp_frame[temp_frame['month'] == month]
+            y_list.append(get_total_sales(temp_month_frame))
+        
+        
+        print(x_list, y_list)
+        
+        print(colors[i])
+        temp_scatter = go.Scatter(x=x_list,
+                              y=y_list,
                               name= products[i],
                               line=dict(color=colors[i])
                                         )
+        
         data_list.append(temp_scatter)
     
     updatemenus = list([
@@ -328,10 +341,10 @@ def create_average_line_graph(data_frame):
         )
     ])
     
-    layout = dict(title='Sales vs Time Per Product',
+    layout = dict(title='Sales vs Month Per Product',
                   showlegend=False,
                   xaxis=dict(
-                        title = 'Time'
+                        title = 'Time (Months)'
                         ),
                   yaxis=dict(
                         title = 'Sales ($)'
@@ -339,21 +352,24 @@ def create_average_line_graph(data_frame):
                 updatemenus=updatemenus)
 
     fig = dict(data=data_list, layout=layout)
-    py.iplot(fig, filename='sales-vs-time-int')     
+    py.iplot(fig, filename='sales-vs-month-int')     
     
 
-def print_month_rank(data_frame):
+def month_rank(data_frame):
     total_sales_dict = {}
     month_list = data_frame['month'].unique().tolist()
+    
     for month in month_list:
         temp_frame = data_frame[data_frame['month'] == month]
-        total_sales_dict[month] = temp_frame['sales price'].sum()
+        total_sales_dict[month] = get_total_sales(temp_frame)
     
-    total_sales_dict = dict(sorted(total_sales_dict.items(), key=operator.itemgetter(1)))
+    total_sales_dict = dict(reversed(sorted(total_sales_dict.items(), key=operator.itemgetter(1))))
     
     for info in total_sales_dict:
-        print(month_dictionary[info] + ': ' + str(total_sales_dict[info]))
-        
+        print(month_dictionary[info] + ': ' + "${0:,.2f}".format(total_sales_dict[info]))
+    
+    return(total_sales_dict)  
+
 
         
 month_1 = '/Users/madeline/Desktop/SPRING_2019/OPIM_243/sales-reporting-exercise/data/sales-201710.csv'
@@ -365,5 +381,8 @@ test_frame = create_master_dataframe(test_pathname_list)
 test_frame_2 = prep_data_frame(test_frame)
 create_line_graph(test_frame_2)
 create_comparison_bar(test_frame_2)
+print('Months with Highest Sales: ')
+month_rank = month_rank(test_frame_2)
+create_average_line_graph(test_frame_2)
 
     
