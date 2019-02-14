@@ -57,8 +57,10 @@ product_subtotals = dict(reversed(sorted_product_subtotals))
 print('TOP 3 SELLING PRODUCTS: ')
 
 count = 1
+
 for item in product_subtotals:
-    print(str(count) + '. ' + item + ' ' + to_usd(round(product_subtotals[item], 2)))
+    temp_float = product_subtotals[item]
+    print(str(count) + '. ' + item + ' ' + '${0:,.2f}'.format(temp_float))
     count = count + 1
     if count > 3:
         break
