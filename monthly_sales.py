@@ -15,11 +15,23 @@ import plotly as py
 import plotly.graph_objs as go
 
 
-user_input = '/Users/madeline/Desktop/SPRING_2019/OPIM_243/sales-reporting-exercise/data/sales-201710.csv'
-#input('please input the file pathname to load: ')
+pathname = '/Users/madeline/Desktop/SPRING_2019/OPIM_243/sales-reporting-exercise/data/sales-201710.csv'
+attributes = ['date', 'product','unit price', 'units sold', 'sales price']
 
+
+#from starter code https://github.com/s2t2/exec-dash-starter-py/commit/525446a5850d211bb78dfe1cb3ffb42ea4b3c9ad
+
+def to_usd(price):
+    return '${0:, .2f}'.format(price)
+
+
+
+user_input = input('please input the file pathname to load: ')
 sales_data = pd.read_csv(user_input)
-attributes = sales_data.columns.tolist()
+
+if sales_data.columns.tolist() != attributes:
+    print('Oops: csv not formatted correctly... are you sure you want to load this in?')
+
 sales_data['date'] = pd.to_datetime(sales_data['date'])
 month = sales_data['date'][0].strftime('%B')
 year = sales_data['date'][0].strftime('%Y')
@@ -27,7 +39,8 @@ year = sales_data['date'][0].strftime('%Y')
 print('SALES REPORT ('+ sales_data['date'][0].strftime('%B') +
                      ' ' + sales_data['date'][0].strftime('%Y') +
                      ')')
-print('TOTAL SALES : $', str('%0.2f'%sales_data['sales price'].sum()))
+print('TOTAL SALES : $' + "${0:,.2f}".format(sales_data['sales price'].sum()))
+      #str('%0.2f'%sales_data['sales price'].sum()))
 
 products = sales_data['product'].unique().tolist()
 
@@ -45,7 +58,7 @@ print('TOP 3 SELLING PRODUCTS: ')
 
 count = 1
 for item in product_subtotals:
-    print(str(count) + '. ' + item + ' $' + str('%0.2f'%round(product_subtotals[item], 2)))
+    print(str(count) + '. ' + item + ' ' + to_usd(round(product_subtotals[item], 2)))
     count = count + 1
     if count > 3:
         break
@@ -69,6 +82,7 @@ layout = go.Layout(title='Top Selling Products (' + month + ' ' + year + ')',
                    yaxis = dict(title='Product')
                    )
 figure = go.Figure(data = data,layout=layout)
+
 py.offline.plot(figure, filename='horizontal-bar.html', auto_open = True)
 
 
