@@ -14,6 +14,12 @@ from collections import OrderedDict
 import plotly as py
 import plotly.graph_objs as go
 
+py.tools.set_credentials_file(username='madelinelee', api_key='FW2B67yKVADiMx2Ahz5G')
+import plotly.plotly as py
+from plotly import tools
+import plotly.graph_objs as go
+from plotly.tools import FigureFactory as FF
+
 
 pathname = '/Users/madeline/Desktop/SPRING_2019/OPIM_243/sales-reporting-exercise/data/sales-201710.csv'
 attributes = ['date', 'product','unit price', 'units sold', 'sales price']
@@ -77,14 +83,18 @@ x = list(reversed(x))
 data = [go.Bar(
             x=x,
             y=y,
-            orientation='h'
+            orientation = 'h'
     )]
+
+margin = go.Margin(l = 200, r = 50)
+
 layout = go.Layout(title='Top Selling Products (' + month + ' ' + year + ')',
-                   xaxis = dict(title='USD'),
-                   yaxis = dict(title='Product')
+                   xaxis = dict(title='USD ($)'),
+                   yaxis = dict(title='Product'),
+                   margin = margin
                    )
 figure = go.Figure(data = data,layout=layout)
 
-py.offline.plot(figure, filename='horizontal-bar.html', auto_open = True)
+py.iplot(figure, filename='horizontal-bar.html')
 
 
