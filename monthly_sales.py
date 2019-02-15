@@ -37,7 +37,9 @@ sales_data = pd.read_csv(user_input)
 
 if sales_data.columns.tolist() != attributes:
     print('Oops: csv not formatted correctly... are you sure you want to load this in?')
-
+    user_input = input('please input the file pathname to load: ')
+    sales_data = pd.read_csv(user_input)
+    
 sales_data['date'] = pd.to_datetime(sales_data['date'])
 month = sales_data['date'][0].strftime('%B')
 year = sales_data['date'][0].strftime('%Y')
