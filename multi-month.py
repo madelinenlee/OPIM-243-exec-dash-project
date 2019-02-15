@@ -178,14 +178,12 @@ def create_comparison_bar(data_frame):
 #function to create line graph of sales over time per each product, interactive
 def create_line_graph(data_frame):
     colors = ['#33CFA5','orange','#F06A6A','blue', 'violet',
-              'yellowgreen','aliceblue','lightgoldenrodyellow']
+              'yellowgreen','darkgrey','goldenrodyellow']
     products = data_frame['product'].unique().tolist()
     products=sorted(products)
     #print(products)
     
     data_list = []
-    
-    
     
     for i in range(0, len(products)):
         temp_frame = data_frame[data_frame['product'] == products[i]]
